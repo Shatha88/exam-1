@@ -9,6 +9,9 @@ updateuserResponse(Request req) async {
     File usersFile = File('bin/SavedFiles/Users/users.json');
     final List users = jsonDecode(await usersFile.readAsString());
 
+    var update = users.firstWhere((user) =>
+        user['email'] == body['email'] && user['password'] == body['password']);
+
     if (!body.containsKey("email") &&
         !body.containsKey("password") &&
         !body.containsKey("name") &&
@@ -16,7 +19,14 @@ updateuserResponse(Request req) async {
         !body.containsKey("address")) {
       return Response.forbidden("please add requested data..");
     }
-    users.add(body);
+
+    for (var user in users) {
+      if (user['email'] == body['email'] &&
+          user['password'] == body['password']) {
+        user = body;
+        break;
+      }
+    }
 
     usersFile.writeAsString(jsonEncode(users));
 
